@@ -6,6 +6,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { Camera } from "expo-camera";
 import { Dimensions } from "react-native";
 import * as ImageManipulator from "expo-image-manipulator";
+import Clipboard from 'expo-clipboard';
 
 function HomeScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
@@ -21,6 +22,7 @@ function HomeScreen({ navigation }) {
   const [showText, setShowText] = useState(false);
   const [resultImg, setResultImg] = useState("");
   const [resultText, setResultText] = useState("");
+  
   let camera;
 
   var camStyles = [
@@ -60,7 +62,7 @@ function HomeScreen({ navigation }) {
       .then((responseJson) => {
         if (responseJson.success) {
           setResultText(responseJson.img_text);
-          console.log(responseJson.img_text);
+          Clipboard.setString(responseJson.img_text);
           setSpinner(false);
           setCamStyle(0);
           setShowText(true);
@@ -233,12 +235,30 @@ function HomeScreen({ navigation }) {
         </>
       ) : (
         <>
+        {showText ?
+    
           <Text
             style={{
               fontSize: 20,
             }}
           >
-            Info Clipped
+            Text Copied To Clipboard
+            <Image
+              style={{
+                width: 25,
+                height: 25,
+              }}
+              // Please. use the correct source =))
+              source={require("../assets/images/check-green.png")}
+            />
+          </Text>:
+          <>
+<Text
+            style={{
+              fontSize: 20,
+            }}
+          >
+            Object Clipped
             <Image
               style={{
                 width: 25,
@@ -248,6 +268,8 @@ function HomeScreen({ navigation }) {
               source={require("../assets/images/check-green.png")}
             />
           </Text>
+          </>}
+
           <View style={styles.addBar}>
             <TouchableOpacity onPress={resetPage}>
               <Image
@@ -257,6 +279,8 @@ function HomeScreen({ navigation }) {
               />
             </TouchableOpacity>
           </View>
+
+
         </>
       )}
 
