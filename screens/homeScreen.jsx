@@ -1,12 +1,13 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-import { Text, View, Image, ActivityIndicator, ScrollView, } from "react-native";
+import { Text, View, Image, ActivityIndicator, ScrollView } from "react-native";
 import styles from "../styles/homeScreen";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Camera } from "expo-camera";
 import { Dimensions } from "react-native";
 import * as ImageManipulator from "expo-image-manipulator";
-import Clipboard from 'expo-clipboard';
+import Clipboard from "expo-clipboard";
+import { useIsFocused } from '@react-navigation/native';
 
 function HomeScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
@@ -22,7 +23,8 @@ function HomeScreen({ navigation }) {
   const [showText, setShowText] = useState(false);
   const [resultImg, setResultImg] = useState("");
   const [resultText, setResultText] = useState("");
-  
+  const isFocused = useIsFocused();
+
   let camera;
 
   var camStyles = [
@@ -142,20 +144,23 @@ function HomeScreen({ navigation }) {
     (async () => {
       const { status } = await Camera.requestPermissionsAsync();
       setHasPermission(status === "granted");
+      let camera;
     })();
   }, []);
 
   return (
     <View style={styles.container}>
+       { isFocused && 
       <Camera
         style={camStyles[camStyle]}
         ratio="4:3"
         flashMode={flashMode}
-        type={type}
+        type={Camera.Constants.Type.back}
         ref={(r) => {
           camera = r;
         }}
       />
+    }
       {spinner ? (
         <View
           style={{
@@ -207,7 +212,11 @@ function HomeScreen({ navigation }) {
             overflow: "scroll",
           }}
         >
-          <Text style={{ fontSize: 26, paddingHorizontal: 16, paddingVertical:20 }}>{resultText}</Text>
+          <Text
+            style={{ fontSize: 26, paddingHorizontal: 16, paddingVertical: 20 }}
+          >
+            {resultText}
+          </Text>
         </ScrollView>
       ) : (
         <View></View>
@@ -235,40 +244,41 @@ function HomeScreen({ navigation }) {
         </>
       ) : (
         <>
-        {showText ?
-    
-          <Text
-            style={{
-              fontSize: 20,
-            }}
-          >
-            Text Copied To Clipboard
-            <Image
+          {showText ? (
+            <Text
               style={{
-                width: 25,
-                height: 25,
+                fontSize: 20,
               }}
-              // Please. use the correct source =))
-              source={require("../assets/images/check-green.png")}
-            />
-          </Text>:
-          <>
-<Text
-            style={{
-              fontSize: 20,
-            }}
-          >
-            Object Clipped
-            <Image
-              style={{
-                width: 25,
-                height: 25,
-              }}
-              // Please. use the correct source =))
-              source={require("../assets/images/check-green.png")}
-            />
-          </Text>
-          </>}
+            >
+              Text Copied To Clipboard
+              <Image
+                style={{
+                  width: 25,
+                  height: 25,
+                }}
+                // Please. use the correct source =))
+                source={require("../assets/images/check-green.png")}
+              />
+            </Text>
+          ) : (
+            <>
+              <Text
+                style={{
+                  fontSize: 20,
+                }}
+              >
+                Object Clipped
+                <Image
+                  style={{
+                    width: 25,
+                    height: 25,
+                  }}
+                  // Please. use the correct source =))
+                  source={require("../assets/images/check-green.png")}
+                />
+              </Text>
+            </>
+          )}
 
           <View style={styles.addBar}>
             <TouchableOpacity onPress={resetPage}>
@@ -279,13 +289,11 @@ function HomeScreen({ navigation }) {
               />
             </TouchableOpacity>
           </View>
-
-
         </>
       )}
 
       <View style={styles.footer}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("ViewObjects")}>
           <Image
             source={require("../assets/images/panel-white.png")}
             fadeDuration={0}
@@ -293,7 +301,7 @@ function HomeScreen({ navigation }) {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("Home")}>
           <Image
             source={require("../assets/images/add-white.png")}
             fadeDuration={0}
