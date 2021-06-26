@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-import { Text, View, Image,  ActivityIndicator } from "react-native";
+import { Text, View, Image, ActivityIndicator, ScrollView, } from "react-native";
 import styles from "../styles/homeScreen";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Camera } from "expo-camera";
@@ -20,7 +20,7 @@ function HomeScreen({ navigation }) {
   const [showData, setShowData] = useState(false);
   const [showText, setShowText] = useState(false);
   const [resultImg, setResultImg] = useState("");
-  const [resultText, setResultText] = useState("")
+  const [resultText, setResultText] = useState("");
   let camera;
 
   var camStyles = [
@@ -32,6 +32,7 @@ function HomeScreen({ navigation }) {
     if (!camera) return;
     setCamStyle(1);
     setIsText(true);
+    setSpinner(true);
 
     const photo = await camera.takePictureAsync();
     const manipResult = await ImageManipulator.manipulateAsync(
@@ -57,9 +58,12 @@ function HomeScreen({ navigation }) {
     })
       .then((response) => response.json())
       .then((responseJson) => {
-        if (response.status === 200) {
-          alert("done");
-          console.log(responseJson.url)
+        if (responseJson.success) {
+          setResultText(responseJson.img_text);
+          console.log(responseJson.img_text);
+          setSpinner(false);
+          setCamStyle(0);
+          setShowText(true);
         } else {
           alert("Server Error");
         }
@@ -68,17 +72,16 @@ function HomeScreen({ navigation }) {
         console.error(error);
         alert("Server Error");
         setCamStyle(0);
+        setSpinner(false);
       });
   };
 
-  const resetPage = () =>{
+  const resetPage = () => {
     setShowData(false);
     setShowText(false);
-      setResultImg("");
-      setResultText("");
-      
-
-  }
+    setResultImg("");
+    setResultText("");
+  };
 
   const extractObject = async () => {
     if (!camera) return;
@@ -110,10 +113,10 @@ function HomeScreen({ navigation }) {
       },
       body: data,
     })
-    .then((response) => {
+      .then((response) => {
         if (!response.ok) {
           console.log(response.status);
-          alert("Server Error")
+          alert("Server Error");
         }
         return response.json();
       })
@@ -129,6 +132,7 @@ function HomeScreen({ navigation }) {
         console.error(error);
         alert("Server Error");
         setCamStyle(0);
+        setSpinner(false);
       });
   };
 
@@ -150,79 +154,111 @@ function HomeScreen({ navigation }) {
           camera = r;
         }}
       />
-      {spinner ?
-      <View style={{height: camHeight, width: "100%", position: "absolute",
-      left: 0,
-      right: 0,
-      top: 0,
-      flex: 1,
-      alignContent:"center",
-    alignItems: "center",}}>
-      <ActivityIndicator size={100} color="#F9FAFB" />
-    </View>:
-      <View></View>
+      {spinner ? (
+        <View
+          style={{
+            height: camHeight,
+            width: "100%",
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: 0,
+            flex: 1,
+            alignContent: "center",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <ActivityIndicator size={100} color="#F9FAFB" />
+        </View>
+      ) : (
+        <View></View>
+      )}
+      {showData ? (
+        <Image
+          source={{ uri: resultImg }}
+          style={{
+            height: camHeight,
+            width: "100%",
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: 0,
+          }}
+        />
+      ) : (
+        <View></View>
+      )}
 
+      {showText ? (
+        <ScrollView
+          style={{
+            height: camHeight,
+            width: "100%",
+            position: "absolute",
+            opacity: 0.7,
+            backgroundColor: "#F9FAFB",
+            left: 0,
+            right: 0,
+            top: 0,
+            textAlign: "center",
+            overflow: "scroll",
+          }}
+        >
+          <Text style={{ fontSize: 26, paddingHorizontal: 16, paddingVertical:20 }}>{resultText}</Text>
+        </ScrollView>
+      ) : (
+        <View></View>
+      )}
 
-      }
-      {showData ?
+      {!showData & !showText ? (
+        <>
+          <View style={styles.addBar}>
+            <TouchableOpacity onPress={extractText}>
+              <Image
+                source={require("../assets/images/text-orange.png")}
+                fadeDuration={0}
+                style={styles.trayIcon}
+              />
+            </TouchableOpacity>
 
-<Image source={{uri: resultImg}}
-style={{height: camHeight, width: "100%", position: "absolute",
-left: 0,
-right: 0,
-top: 0,}} />:
-      <View></View>
-
-      }
-
-{!showData&!showText ?
-<>
-      <View style={styles.addBar}>
-        <TouchableOpacity onPress={extractText}>
-          <Image
-            source={require("../assets/images/text-orange.png")}
-            fadeDuration={0}
-            style={styles.trayIcon}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={extractObject}>
-          <Image
-            source={require("../assets/images/object-purple.png")}
-            fadeDuration={0}
-            style={styles.trayIcon}
-          />
-        </TouchableOpacity>
-      </View>
-      </>:
-      <>
-      <Text style={{
-      fontSize: 20,
-    }}>
-     Info Clipped
-  <Image
-    style={{
-      width: 25,
-      height: 25
-    }}
-
-    // Please. use the correct source =)) 
-    source={require('../assets/images/check-green.png')} 
-  />
-   
-</Text>
-      <View style={styles.addBar}>
-
-<TouchableOpacity onPress={resetPage}>
-          <Image
-            source={require("../assets/images/next-purple.png")}
-            fadeDuration={0}
-            style={styles.trayIcon}
-          />
-        </TouchableOpacity>
+            <TouchableOpacity onPress={extractObject}>
+              <Image
+                source={require("../assets/images/object-purple.png")}
+                fadeDuration={0}
+                style={styles.trayIcon}
+              />
+            </TouchableOpacity>
           </View>
-          </>
-          }
+        </>
+      ) : (
+        <>
+          <Text
+            style={{
+              fontSize: 20,
+            }}
+          >
+            Info Clipped
+            <Image
+              style={{
+                width: 25,
+                height: 25,
+              }}
+              // Please. use the correct source =))
+              source={require("../assets/images/check-green.png")}
+            />
+          </Text>
+          <View style={styles.addBar}>
+            <TouchableOpacity onPress={resetPage}>
+              <Image
+                source={require("../assets/images/next-purple.png")}
+                fadeDuration={0}
+                style={styles.trayIcon}
+              />
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
 
       <View style={styles.footer}>
         <TouchableOpacity>
