@@ -22,6 +22,18 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
 
+  header: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 40,
+    height: 80,
+    flex: 1,
+    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "flex-end",
+  },
+
   addBar: {
     position: "absolute",
     left: 0,
