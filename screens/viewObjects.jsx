@@ -192,7 +192,6 @@ export default function ViewObjects({ navigation }) {
 
   const deleteImg = async (link, index) => {
       setSpinner(true);
-    console.log(link);
     var imgListTmp = imageList
     imgListTmp.splice(parseInt(index), 1);
     setImageList(imgListTmp);
