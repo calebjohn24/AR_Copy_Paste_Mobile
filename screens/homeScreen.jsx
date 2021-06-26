@@ -213,7 +213,7 @@ function HomeScreen({ navigation }) {
           }}
         >
           <Text
-            style={{ fontSize: 26, paddingHorizontal: 16, paddingVertical: 20 }}
+            style={{ fontSize: 26, paddingHorizontal: 16, paddingVertical: 30 }}
           >
             {resultText}
           </Text>
