@@ -1,21 +1,67 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { useState, useEffect, useRef } from "react";
+import { Text, View, Image } from "react-native";
+import styles from "../styles/homeScreen";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { Camera } from "expo-camera";
+import { Dimensions } from "react-native";
 
-export default function HomeScreen() {
+function HomeScreen({ navigation }) {
+  const [hasPermission, setHasPermission] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [flashMode, setFlashMode] = useState(Camera.Constants.FlashMode.off);
+  const dimensions = useRef(Dimensions.get("window"));
+  const screenWidth = dimensions.current.width;
+  const camHeight = Math.round((screenWidth * 4) / 3);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestPermissionsAsync();
+      setHasPermission(status === "granted");
+    })();
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text>App 1</Text>
-      <StatusBar style="auto" />
+
+    <View style={styles.container}> 
+
+<Camera style={{height: camHeight,
+        width: "100%",}} ratio="4:3" flashMode={flashMode} type={type} />
+
+<View style={styles.addBar}>
+
+<TouchableOpacity>
+    <Image
+      source={require("../assets/images/camera-purple.png")}
+      fadeDuration={0}
+      style={styles.trayIcon}
+    />
+  </TouchableOpacity>
+
+
+
+</View>
+
+
+      <View style={styles.footer}>
+        <TouchableOpacity>
+          <Image
+            source={require("../assets/images/panel-white.png")}
+            fadeDuration={0}
+            style={styles.addIcon}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity>
+          <Image
+            source={require("../assets/images/add-white.png")}
+            fadeDuration={0}
+            style={styles.addIcon}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default HomeScreen;
