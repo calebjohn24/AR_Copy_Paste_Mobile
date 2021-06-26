@@ -8,6 +8,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+
   footer: {
     position: "absolute",
     left: 0,
@@ -25,7 +26,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
-    bottom: 128,
+    bottom: 156,
     flexDirection: "row",
     width: "100%",
     height: 84,
@@ -33,7 +34,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  trayIcon: { resizeMode: "contain", height: "85%" },
+  trayIcon: { resizeMode: "contain", height: "90%" },
   addIcon: {
     resizeMode: "contain",
     height: "75%",
