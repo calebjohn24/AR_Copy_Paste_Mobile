@@ -78,7 +78,7 @@ export default function ViewObjects({ navigation }) {
         >
           <TouchableOpacity onPress={() => deleteImg(item["item"], item["index"])}>
             <Image
-              source={require("../assets/images/trash-orange.png")}
+              source={require("../assets/images/trash-red.png")}
               fadeDuration={0}
               style={{ height: "70%", resizeMode: "contain" }}
             />
@@ -126,14 +126,14 @@ export default function ViewObjects({ navigation }) {
         >
           <TouchableOpacity onPress={() => deleteText(item["item"]["id"], item["index"])}>
             <Image
-              source={require("../assets/images/trash-orange.png")}
+              source={require("../assets/images/trash-red.png")}
               fadeDuration={0}
               style={{ height: "70%", resizeMode: "contain" }}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => onShareText(item["item"]["data"])}>
             <Image
-              source={require("../assets/images/share-purple.png")}
+              source={require("../assets/images/share-orange.png")}
               fadeDuration={0}
               style={{ height: "70%", resizeMode: "contain" }}
             />
